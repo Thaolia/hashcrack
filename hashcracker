@@ -1,0 +1,32 @@
+#!/usr/bin/python
+import json
+import sys
+
+import socks # python-socksipy
+import socket
+import urllib2
+
+# Set the proxy information
+socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, '6.6.6.50', 9050)
+socks.wrapmodule(urllib2)
+
+try :
+	arg = sys.argv[1]
+except :
+	print "cmd : %s mdp|hash" % sys.argv[0]
+	exit()
+
+#proxy_handler = urllib2.ProxyHandler({'http': 'http://172.17.100.1:8888/'})
+u = urllib2.urlopen('https://goog.li/?j=%s' % arg)
+result = json.load(u)
+if result["found"] == "true" and not result["type"] == "cleartext" :
+	print "Resultat de la recherche : %s" % result["hashes"]["cleartext"]
+	print "Type du Hash : %s" % result["type"]
+	#print result["hashes"]["md5"]
+elif result["type"] == "cleartext" :
+	print "Hash demande : %s" % result["hashes"]["cleartext"]
+	print "Resultat des hashs : %s" % result["hashes"]
+else :
+	print "SRY"
+	print result["info"]
+u.close()
